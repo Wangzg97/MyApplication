@@ -92,10 +92,12 @@ public class MainActivity extends AppCompatActivity {
                 startActivityForResult(intent, TAKE_PHOTO);
             }
         });
+
         select_button.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
-                Toast.makeText(MainActivity.this, "You clicked select_button", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(MainActivity.this, SelectActivity.class);
+                startActivity(intent);
             }
         });
         generate_button.setOnClickListener(new View.OnClickListener(){
