@@ -2,6 +2,7 @@ package com.example.myapplication;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
@@ -11,6 +12,7 @@ import androidx.core.content.FileProvider;
 import android.Manifest;
 import android.annotation.TargetApi;
 import android.content.ContentUris;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -27,6 +29,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 
@@ -41,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
     private ImageView picture;
     private Button album_button;
     private Button camera_button;
+    private TextView style_chosen_tv;
     private Button select_button;
     private Button generate_button;
     private Uri imageUri;
@@ -98,13 +102,15 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        select_button.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v){
-                Intent intent = new Intent(MainActivity.this, SelectActivity.class);
-                startActivity(intent);
-            }
-        });
+        // 选择模型-- 在xml文件中设置了onClick属性，故此部分代码注释
+//        select_button.setOnClickListener(new View.OnClickListener(){
+//            @Override
+//            public void onClick(View v){
+//                Intent intent = new Intent(MainActivity.this, SelectActivity.class);
+//                startActivity(intent);
+//
+//            }
+//        });
         generate_button.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
@@ -219,6 +225,60 @@ public class MainActivity extends AppCompatActivity {
         } else {
             Toast.makeText(this, "failed to get image", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    // 选择模型--select_type按钮
+    private AlertDialog alertDialog;
+    public void showSingleAlertDialog(View view){
+        final String[] items = {"model1","model2","model3","model4"};
+        AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
+        alertBuilder.setTitle("select a model");
+        alertBuilder.setSingleChoiceItems(items, -1, new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface arg0, int index) {
+                Toast.makeText(MainActivity.this, items[index], Toast.LENGTH_SHORT).show();
+            }
+        });
+        alertBuilder.setPositiveButton("ok", new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface arg0, int arg1) {
+                //TODO 业务逻辑代码
+                Toast.makeText(MainActivity.this, arg1+"", Toast.LENGTH_SHORT).show();
+//                style_chosen_tv = (TextView) findViewById(R.id.style_chosen_tv);
+//                switch (arg1) {
+//                    case 0:
+//                        style_chosen_tv.setText('0');
+//                        break;
+//                    case 1:
+//                        style_chosen_tv.setText('1');
+//                        break;
+//                    case 2:
+//                        style_chosen_tv.setText('2');
+//                        break;
+//                    case 3:
+//                        style_chosen_tv.setText("3");
+//                        break;
+//                    default:
+//                        break;
+//                }
+                // 关闭提示框
+                alertDialog.dismiss();
+            }
+        });
+        alertBuilder.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface arg0, int arg1) {
+                // TODO 业务逻辑代码
+
+                // 关闭提示框
+                alertDialog.dismiss();
+            }
+        });
+        alertDialog = alertBuilder.create();
+        alertDialog.show();
     }
 
     @Override
