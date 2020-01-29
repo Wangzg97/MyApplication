@@ -60,6 +60,7 @@ public class MainActivity extends AppCompatActivity {
         picture = (ImageView)findViewById(R.id.picture);
         album_button = (Button)findViewById(R.id.album_button);
         camera_button = (Button)findViewById(R.id.camera_button);
+        style_chosen_tv = (TextView) findViewById(R.id.style_chosen_tv);
         select_button = (Button)findViewById(R.id.select_button);
         generate_button = (Button)findViewById(R.id.generate_button);
 
@@ -238,45 +239,32 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface arg0, int index) {
                 Toast.makeText(MainActivity.this, items[index], Toast.LENGTH_SHORT).show();
-            }
-        });
-        alertBuilder.setPositiveButton("ok", new DialogInterface.OnClickListener() {
-
-            @Override
-            public void onClick(DialogInterface arg0, int arg1) {
-                //TODO 业务逻辑代码
-                Toast.makeText(MainActivity.this, arg1+"", Toast.LENGTH_SHORT).show();
-//                style_chosen_tv = (TextView) findViewById(R.id.style_chosen_tv);
-//                switch (arg1) {
-//                    case 0:
-//                        style_chosen_tv.setText('0');
-//                        break;
-//                    case 1:
-//                        style_chosen_tv.setText('1');
-//                        break;
-//                    case 2:
-//                        style_chosen_tv.setText('2');
-//                        break;
-//                    case 3:
-//                        style_chosen_tv.setText("3");
-//                        break;
-//                    default:
-//                        break;
-//                }
-                // 关闭提示框
-                alertDialog.dismiss();
-            }
-        });
-        alertBuilder.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
-
-            @Override
-            public void onClick(DialogInterface arg0, int arg1) {
-                // TODO 业务逻辑代码
+                style_chosen_tv.setText(items[index]);
 
                 // 关闭提示框
                 alertDialog.dismiss();
             }
         });
+//        alertBuilder.setPositiveButton("ok", new DialogInterface.OnClickListener() {
+//
+//            @Override
+//            public void onClick(DialogInterface arg0, int arg1) {
+//                //TODO 业务逻辑代码
+//
+//                // 关闭提示框
+//                alertDialog.dismiss();
+//            }
+//        });
+//        alertBuilder.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+//
+//            @Override
+//            public void onClick(DialogInterface arg0, int arg1) {
+//                // TODO 业务逻辑代码
+//
+//                // 关闭提示框
+//                alertDialog.dismiss();
+//            }
+//        });
         alertDialog = alertBuilder.create();
         alertDialog.show();
     }
