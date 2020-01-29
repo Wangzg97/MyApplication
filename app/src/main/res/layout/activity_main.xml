@@ -56,7 +56,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center_horizontal"
-                android:text="sample1"
+                android:text="no model"
                 android:textSize="24sp" />
 
             <Button

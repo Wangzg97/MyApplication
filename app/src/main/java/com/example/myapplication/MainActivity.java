@@ -107,7 +107,7 @@ public class MainActivity extends AppCompatActivity {
 //        select_button.setOnClickListener(new View.OnClickListener(){
 //            @Override
 //            public void onClick(View v){
-//                Intent intent = new Intent(MainActivity.this, SelectActivity.class);
+//                Intent intent = new Intent(MainActivity.this, IntroductActivity.class);
 //                startActivity(intent);
 //
 //            }
@@ -279,11 +279,12 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()){
             case R.id.introduction:
-                Toast.makeText(this, "You clicked introduction", Toast.LENGTH_SHORT).show();
+                Intent intent1 = new Intent(MainActivity.this, IntroductActivity.class);
+                startActivity(intent1);
                 break;
             case  R.id.about:
-                Intent intent = new Intent(MainActivity.this, AboutActivity.class);
-                startActivity(intent);
+                Intent intent2 = new Intent(MainActivity.this, AboutActivity.class);
+                startActivity(intent2);
                 break;
             default:
         }
