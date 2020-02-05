@@ -37,7 +37,16 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
+import okhttp3.Callback;
+import okhttp3.FormBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Call;
+import okhttp3.Response;
+
+
 public class MainActivity extends AppCompatActivity {
+
 
     public static final int TAKE_PHOTO = 1;
     public static final int CHOOSE_PHOTO = 2;
@@ -112,10 +121,59 @@ public class MainActivity extends AppCompatActivity {
 //
 //            }
 //        });
+
+        // 向服务器发送信息
         generate_button.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
-                Toast.makeText(MainActivity.this, "You clicked generate_button", Toast.LENGTH_SHORT).show();
+                String style_chosen = String.valueOf(style_chosen_tv.getText());
+                String url = "http://192.168.1.115:5000/send";//服务器地址
+                SendMessage(url, style_chosen);
+            }
+        });
+    }
+
+    // 向服务器发送消息
+    private void SendMessage(String url, String style_chosen){
+        OkHttpClient client = new OkHttpClient();
+        FormBody.Builder formBuilder = new FormBody.Builder();
+        formBuilder.add("style_chosen", style_chosen);
+        Request request = new Request.Builder().url(url).post(formBuilder.build()).build();
+        Call call = client.newCall(request);
+        call.enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(MainActivity.this, "服务器错误", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                final String res = response.body().string();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (res.equals('0')){
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(MainActivity.this, "发送的数据有误", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        } else {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(MainActivity.this, "成功", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        }
+                    }
+                });
             }
         });
     }
