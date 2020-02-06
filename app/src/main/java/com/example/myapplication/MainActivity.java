@@ -36,6 +36,8 @@ import android.widget.Toast;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import okhttp3.Callback;
 import okhttp3.FormBody;
@@ -47,7 +49,7 @@ import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity {
 
-
+    private static final String TAG = "MainActivity";
     public static final int TAKE_PHOTO = 1;
     public static final int CHOOSE_PHOTO = 2;
     private ImageView picture;
@@ -57,6 +59,10 @@ public class MainActivity extends AppCompatActivity {
     private Button select_button;
     private Button generate_button;
     private Uri imageUri;
+
+    private String photoPath;
+
+    File f;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -127,55 +133,41 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v){
                 String style_chosen = String.valueOf(style_chosen_tv.getText());
-                String url = "http://192.168.1.115:5000/send";//服务器地址
-                SendMessage(url, style_chosen);
+                String url = "http://192.168.1.115:8090/upload"; //服务器地址
+                Log.d(TAG, "将要上传的图片路径为"+photoPath);
+                boolean fileExist = fileIsExists(photoPath);
+                if(fileExist){
+                    Toast.makeText(MainActivity.this,"开始上传"+f.getAbsolutePath(),Toast.LENGTH_LONG).show();
+                    try {
+                        //上传图片
+                        ImageUpload.run(f);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+//                upLoadInfo(url, photoPath, style_chosen);
             }
         });
+
     }
 
-    // 向服务器发送消息
-    private void SendMessage(String url, String style_chosen){
-        OkHttpClient client = new OkHttpClient();
-        FormBody.Builder formBuilder = new FormBody.Builder();
-        formBuilder.add("style_chosen", style_chosen);
-        Request request = new Request.Builder().url(url).post(formBuilder.build()).build();
-        Call call = client.newCall(request);
-        call.enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(MainActivity.this, "服务器错误", Toast.LENGTH_SHORT).show();
-                    }
-                });
+    //判断文件是否存在
+    public boolean fileIsExists(String strFile) {
+        try {
+            f = new File(strFile);
+            if (!f.exists()) {
+                return false;
             }
+        } catch (Exception e) {
+            return false;
+        }
+        return true;
+    }
 
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                final String res = response.body().string();
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (res.equals('0')){
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    Toast.makeText(MainActivity.this, "发送的数据有误", Toast.LENGTH_SHORT).show();
-                                }
-                            });
-                        } else {
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    Toast.makeText(MainActivity.this, "成功", Toast.LENGTH_SHORT).show();
-                                }
-                            });
-                        }
-                    }
-                });
-            }
-        });
+
+    // 向服务器发送消息
+    private void upLoadInfo(String url, String path, String style_info){
+
     }
 
     // 调用相册
@@ -209,7 +201,8 @@ public class MainActivity extends AppCompatActivity {
                     try {
                         // 将拍摄的照片显示出来
                         Bitmap bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(imageUri));
-//                        picture = (ImageView)findViewById(R.id.picture);
+                        photoPath = imageUri.getPath();
+                        Log.d(TAG, "拍照得到的图片路径为"+photoPath);
                         picture.setImageBitmap(bitmap);
                     } catch (FileNotFoundException e){
                         e.printStackTrace();
@@ -255,12 +248,16 @@ public class MainActivity extends AppCompatActivity {
             // 如果是file类型的Uri，直接获取图片路径即可
             imagePath = uri.getPath();
         }
+        photoPath = imagePath;
+        Log.d(TAG, "相册提取的图片路径为"+photoPath);
         displayImage(imagePath); // 根据图片路径显示图片
     }
 
     private void handleImageBeforeKitkat(Intent data) {
         Uri uri = data.getData();
         String imagePath = getImagePath(uri, null);
+        photoPath = imagePath;
+        Log.d(TAG, "相册提取的图片路径为"+photoPath);
         displayImage(imagePath);
     }
 
