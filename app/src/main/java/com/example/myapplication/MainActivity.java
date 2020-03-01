@@ -18,6 +18,8 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -61,6 +63,7 @@ public class MainActivity extends AppCompatActivity {
     private Uri imageUri;
 
     private String photoPath;
+    private static final String download_path = "/storage/emulated/0/Android/data/com.example.myapplication/cache/result.jpg";
 
     File f;
 
@@ -150,6 +153,10 @@ public class MainActivity extends AppCompatActivity {
 //                upLoadInfo(url, photoPath, style_chosen);
                 // 下载图片
                 ImageDownload.run();
+                // 显示处理后的图片
+                Bitmap bitmap = BitmapFactory.decodeFile(download_path);
+                picture.setImageBitmap(bitmap);
+                picture.setScaleType(ImageView.ScaleType.FIT_CENTER);
 
             }
         });
@@ -213,7 +220,12 @@ public class MainActivity extends AppCompatActivity {
                         photoPath = "/storage/emulated/0/Android/data/com.example.myapplication/cache/output_image.jpg";
                         Log.d(TAG, "修正后拍照得到的图片路径为"+photoPath);
 
+//                        picture.setImageBitmap(bitmap);
+                        // 旋转图片纠正角度
+                        int degree = getBitmapDegree(photoPath);
+                        bitmap = rotateBitmapByDegree(bitmap, degree);
                         picture.setImageBitmap(bitmap);
+
                     } catch (FileNotFoundException e){
                         e.printStackTrace();
                     }
@@ -354,5 +366,66 @@ public class MainActivity extends AppCompatActivity {
             default:
         }
         return true;
+    }
+
+    /**
+     * 读取图片的旋转的角度
+     *
+     * @param path
+     *            图片绝对路径
+     * @return 图片的旋转角度
+     */
+    private int getBitmapDegree(String path) {
+        int degree = 0;
+        try {
+            // 从指定路径下读取图片，并获取其EXIF信息
+            ExifInterface exifInterface = new ExifInterface(path);
+            // 获取图片的旋转信息
+            int orientation = exifInterface.getAttributeInt(ExifInterface.TAG_ORIENTATION,
+                    ExifInterface.ORIENTATION_NORMAL);
+            switch (orientation) {
+                case ExifInterface.ORIENTATION_ROTATE_90:
+                    degree = 90;
+                    break;
+                case ExifInterface.ORIENTATION_ROTATE_180:
+                    degree = 180;
+                    break;
+                case ExifInterface.ORIENTATION_ROTATE_270:
+                    degree = 270;
+                    break;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return degree;
+    }
+
+    /**
+     * 将图片按照某个角度进行旋转
+     *
+     * @param bm
+     *            需要旋转的图片
+     * @param degree
+     *            旋转角度
+     * @return 旋转后的图片
+     */
+    public static Bitmap rotateBitmapByDegree(Bitmap bm, int degree) {
+        Bitmap returnBm = null;
+
+        // 根据旋转角度，生成旋转矩阵
+        Matrix matrix = new Matrix();
+        matrix.postRotate(degree);
+        try {
+            // 将原始图片按照旋转矩阵进行旋转，并得到新的图片
+            returnBm = Bitmap.createBitmap(bm, 0, 0, bm.getWidth(), bm.getHeight(), matrix, true);
+        } catch (OutOfMemoryError e) {
+        }
+        if (returnBm == null) {
+            returnBm = bm;
+        }
+        if (bm != returnBm) {
+            bm.recycle();
+        }
+        return returnBm;
     }
 }

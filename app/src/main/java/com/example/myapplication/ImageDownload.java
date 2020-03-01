@@ -20,6 +20,7 @@ import okhttp3.Response;
 public class ImageDownload {
     private static final OkHttpClient client = new OkHttpClient();
     private static final String download_url = "http://192.168.1.113:8090/static/images/test01.jpg";
+    private static final String download_path = "/storage/emulated/0/Android/data/com.example.myapplication/cache/result.jpg";
 
     public static void run(){
 //        final File file = f;
@@ -41,7 +42,7 @@ public class ImageDownload {
                         // 将输入流数据转化为Bitmap位图数据
                         Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
                         // 保存图片至指定路径
-                        File file = new File("download_path");
+                        File file = new File(download_path);
                         file.createNewFile();
                         // 创建文件输出流对象用来向文件中写入数据
                         FileOutputStream fileOutputStream = new FileOutputStream(file);
@@ -51,8 +52,8 @@ public class ImageDownload {
                         fileOutputStream.flush();
                         fileOutputStream.close();
 
-                        Message msg = Message.obtain();
-                        msg.obj = bitmap;
+//                        Message msg = Message.obtain();
+//                        msg.obj = bitmap;
 //                        handler.sendMessage(msg);
                     }
                 });
