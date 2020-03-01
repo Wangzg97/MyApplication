@@ -40,7 +40,7 @@ public class ImageUpload{
                 //设置为自己的ip地址
                 Request request = new Request.Builder()
                         .header("Authorization", "Client-ID " + IMGUR_CLIENT_ID)
-                        .url("http://192.168.1.115:8090/upload")
+                        .url("http://192.168.1.113:8090/upload")
                         .post(requestBody)
                         .build();
                 Log.d("request", request.toString());

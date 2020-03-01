@@ -124,7 +124,6 @@ public class MainActivity extends AppCompatActivity {
 //            public void onClick(View v){
 //                Intent intent = new Intent(MainActivity.this, IntroductActivity.class);
 //                startActivity(intent);
-//
 //            }
 //        });
 
@@ -133,7 +132,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v){
                 String style_chosen = String.valueOf(style_chosen_tv.getText());
-                String url = "http://192.168.1.115:8090/upload"; //服务器地址
                 Log.d(TAG, "将要上传的图片路径为"+photoPath);
                 boolean fileExist = fileIsExists(photoPath);
                 if(fileExist){
@@ -141,11 +139,18 @@ public class MainActivity extends AppCompatActivity {
                     try {
                         //上传图片
                         ImageUpload.run(f);
+                        Toast.makeText(MainActivity.this,"上传完毕",Toast.LENGTH_LONG).show();
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
+                } else {
+                    Log.d(TAG, "当前路径未读取到图片");
+                    Toast.makeText(MainActivity.this,"当前路径未读取到图片",Toast.LENGTH_LONG).show();
                 }
 //                upLoadInfo(url, photoPath, style_chosen);
+                // 下载图片
+                ImageDownload.run();
+
             }
         });
 
@@ -203,6 +208,11 @@ public class MainActivity extends AppCompatActivity {
                         Bitmap bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(imageUri));
                         photoPath = imageUri.getPath();
                         Log.d(TAG, "拍照得到的图片路径为"+photoPath);
+
+                        // 更正路径
+                        photoPath = "/storage/emulated/0/Android/data/com.example.myapplication/cache/output_image.jpg";
+                        Log.d(TAG, "修正后拍照得到的图片路径为"+photoPath);
+
                         picture.setImageBitmap(bitmap);
                     } catch (FileNotFoundException e){
                         e.printStackTrace();
