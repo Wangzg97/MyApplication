@@ -53,7 +53,7 @@ public class ImageDownload {
 
                         Message msg = Message.obtain();
                         msg.obj = bitmap;
-
+//                        handler.sendMessage(msg);
                     }
                 });
             }
